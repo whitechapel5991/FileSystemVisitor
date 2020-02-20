@@ -4,16 +4,16 @@ using System.Text;
 
 namespace FileSystemVisitor.Entities
 {
-    class File : SystemElement
+    public class File : SystemElement
     {
         public File(string path) : base(path)
         {
 
         }
 
-        public override string Operation()
+        public override void BuildFileSystemTree()
         {
-            return string.Format($"File: {Path}");
+            //return string.Format($"File: {Path}");
         }
 
         public override bool IsFolder()
