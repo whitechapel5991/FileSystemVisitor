@@ -15,17 +15,13 @@ namespace FileSystemVisitorTest
         [Test]
         public void Test1()
         {
-            Folder root = new Folder(@"d:\проги_дес\музыка\");
-            root.BuildFileSystemTree();
-            var list = root.children;
+            Folder root = new Folder(@"d:\TKMI\");
+            //root.BuildFileSystemTree();
+            var list = root.Children;
 
-            var list2 = root.GetAllFoldersAndFiles();
+            //var list2 = root.GetAllFoldersAndFiles();
 
-            FileSystemVisitor.FileSystemVisitor visitor = new FileSystemVisitor.FileSystemVisitor();
-            foreach(var item in visitor.GetFileTree(Directory.GetCurrentDirectory()))
-            {
-
-            }
+            //FileSystemVisitor.FileSystemVisitor visitor = new FileSystemVisitor.FileSystemVisitor();
             Assert.Pass();
         }
     }

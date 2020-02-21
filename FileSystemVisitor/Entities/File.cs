@@ -11,10 +11,15 @@ namespace FileSystemVisitor.Entities
 
         }
 
-        public override void BuildFileSystemTree()
+        public override void Accept(IVisitor visitor)
         {
-            //return string.Format($"File: {Path}");
+            visitor.VisitFile(this);
         }
+
+        //public void BuildFileSystemTree()
+        //{
+        //    //return string.Format($"File: {Path}");
+        //}
 
         public override bool IsFolder()
         {

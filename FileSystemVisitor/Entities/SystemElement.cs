@@ -4,28 +4,28 @@ using System.Text;
 
 namespace FileSystemVisitor.Entities
 {
-    public abstract class SystemElement
+    public abstract class SystemElement : ISystemElement
     {
-        protected string Path { get; set; }
+        public string Path { get; set; }
         
         public SystemElement(string path)
         {
             this.Path = path;
         }
 
-        public abstract void BuildFileSystemTree();
+        //public abstract void BuildFileSystemTree();
 
-        public virtual IEnumerable<string> GetAllFoldersAndFiles()
+        //public virtual IEnumerable<SystemElement> GetAllFoldersAndFiles()
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public virtual void Add(SystemElement element)
         {
             throw new NotImplementedException();
         }
 
-        protected virtual void Add(SystemElement element)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected virtual void Remove(SystemElement element)
+        public virtual void Remove(SystemElement element)
         {
             throw new NotImplementedException();
         }
@@ -40,5 +40,7 @@ namespace FileSystemVisitor.Entities
             int position = Path.LastIndexOf('\\');
             return Path.Remove(0, position+1);
         }
+
+        public abstract void Accept(IVisitor visitor);
     }
 }
