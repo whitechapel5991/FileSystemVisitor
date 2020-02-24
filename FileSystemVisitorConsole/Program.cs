@@ -20,22 +20,27 @@ namespace FileSystemVisitorConsole
                 visitor.Progress += ConsoleLog;
                 visitor2.Progress += ConsoleLog;
 
-                var rootFolder =
-                    new FileSystemVisitor.Entities.Folder(Path);
-                
-                visitor.StartBuildSystemTree(rootFolder);
-
-                foreach (var item in visitor.GetAllFoldersAndFiles(rootFolder))
+                foreach (var item in visitor.Find(Path))
                 {
                     Console.WriteLine(item);
                 }
 
+                //var rootFolder =
+                //    new FileSystemVisitor.Entities.Folder(Path);
+
+                //visitor.StartBuildSystemTree(rootFolder);
+
+                //foreach (var item in visitor.GetAllFoldersAndFiles(rootFolder))
+                //{
+                //    Console.WriteLine(item);
+                //}
+
                 Console.WriteLine("=======================================================================");
 
-                rootFolder =
-                    new FileSystemVisitor.Entities.Folder(Path);
-                visitor2.StartBuildSystemTree(rootFolder);
-                foreach (var item in visitor2.GetAllFoldersAndFiles(rootFolder))
+                //rootFolder =
+                //    new FileSystemVisitor.Entities.Folder(Path);
+                //visitor2.StartBuildSystemTree(rootFolder);
+                foreach (var item in visitor2.Find(Path))
                 {
                     Console.WriteLine(item);
                 }

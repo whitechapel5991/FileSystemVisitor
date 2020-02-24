@@ -1,5 +1,6 @@
 ﻿using FileSystemVisitor.Entities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -9,69 +10,109 @@ namespace FileSystemVisitor
     {
         Func<string> filterDelegate;
         public event EventHandler<ProgressArgs> Progress;
+
         public FileSystemVisitor()
         {
-        }
 
+        }
         public FileSystemVisitor(Func<string> filter)
         {
             this.filterDelegate = filter;
         }
 
-        public IEnumerable<SystemElement> GetAllFoldersAndFiles(Folder folder)
+        private IEnumerable<string> GetEnumerator(string path)
         {
-            OnProgress(new ProgressArgs { Message = "File finded..." });
-            foreach (SystemElement element in folder.Children)
-            {
-                if (element.IsFolder())
-                {
-                    foreach (var item in this.GetAllFoldersAndFiles((Folder)element))
-                    {
-                        yield return item;
-                    }
-                }
-
-                yield return element;
-            }
-        }
-
-        public void StartBuildSystemTree(Folder rootFolder)
-        {
-            OnProgress(new ProgressArgs { Message = "Start build system tree..." });
-            BuildFileSystemTree(rootFolder);
-            OnProgress(new ProgressArgs { Message = "End build system tree..." });
-        }
-
-        private void BuildFileSystemTree(Folder rootFolder)
-        {
-            if (Directory.Exists(rootFolder.Path))
+            if (Directory.Exists(path))
             {
                 var pathOfFolders = filterDelegate != null ?
-                    Directory.GetDirectories(rootFolder.Path, filterDelegate.Invoke()) :
-                    Directory.GetDirectories(rootFolder.Path);
+                    Directory.GetDirectories(path, filterDelegate.Invoke()) :
+                    Directory.GetDirectories(path);
 
                 foreach (var folderPath in pathOfFolders)
                 {
-                    var newFolder = new Folder(folderPath);
-                    rootFolder.Add(newFolder);
-                    BuildFileSystemTree(newFolder);
+                    foreach (var deepFolder in this.GetEnumerator(folderPath))
+                    {
+                        yield return deepFolder;
+                    }
+
+                    yield return folderPath;
                 }
 
                 var pathOfFiles = filterDelegate != null ?
-                    Directory.GetFiles(rootFolder.Path, filterDelegate.Invoke(), SearchOption.AllDirectories) :
-                    Directory.GetFiles(rootFolder.Path);
+                    Directory.GetFiles(path, filterDelegate.Invoke(), SearchOption.AllDirectories) :
+                    Directory.GetFiles(path);
 
                 foreach (var filePath in pathOfFiles)
                 {
-                    var newFile = new Entities.File(filePath);
-                    rootFolder.Add(newFile);
-                } 
+                    yield return filePath;
+                }
             }
             else
             {
                 throw new DirectoryNotFoundException("Root directory not found!");
             }
         }
+
+        //public IEnumerable<SystemElement> GetAllFoldersAndFiles(Folder folder)
+        //{
+        //    OnProgress(new ProgressArgs { Message = "File finded..." });
+        //    foreach (SystemElement element in folder.Children)
+        //    {
+        //        if (element.IsFolder())
+        //        {
+        //            foreach (var item in this.GetAllFoldersAndFiles((Folder)element))
+        //            {
+        //                yield return item;
+        //            }
+        //        }
+
+        //        yield return element;
+        //    }
+        //}
+
+        public IEnumerable<string> Find(string path)
+        {
+            OnProgress(new ProgressArgs { Message = "Start finding by path..." });
+
+
+            foreach (var item in GetEnumerator(path))
+            {
+                yield return item;
+            }
+            OnProgress(new ProgressArgs { Message = "Operation End..." });
+           
+        }
+
+        //private void BuildFileSystemTree(Folder rootFolder)
+        //{
+        //    if (Directory.Exists(rootFolder.Path))
+        //    {
+        //        var pathOfFolders = filterDelegate != null ?
+        //            Directory.GetDirectories(rootFolder.Path, filterDelegate.Invoke()) :
+        //            Directory.GetDirectories(rootFolder.Path);
+
+        //        foreach (var folderPath in pathOfFolders)
+        //        {
+        //            var newFolder = new Folder(folderPath);
+        //            rootFolder.Add(newFolder);
+        //            BuildFileSystemTree(newFolder);
+        //        }
+
+        //        var pathOfFiles = filterDelegate != null ?
+        //            Directory.GetFiles(rootFolder.Path, filterDelegate.Invoke(), SearchOption.AllDirectories) :
+        //            Directory.GetFiles(rootFolder.Path);
+
+        //        foreach (var filePath in pathOfFiles)
+        //        {
+        //            var newFile = new Entities.File(filePath);
+        //            rootFolder.Add(newFile);
+        //        } 
+        //    }
+        //    else
+        //    {
+        //        throw new DirectoryNotFoundException("Root directory not found!");
+        //    }
+        //}
 
         protected void OnProgress(ProgressArgs args)
         {
@@ -90,6 +131,7 @@ namespace FileSystemVisitor
             throw new NotImplementedException();
         }
 
+ 
     }
 
     public class ProgressArgs
