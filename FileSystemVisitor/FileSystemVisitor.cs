@@ -74,21 +74,18 @@ namespace FileSystemVisitor
             {
                 OnStart(new ProgressArgs { Message = START_SEARCHING, IsSearching = IsSearching });
 
-                if (!ExcludeFolders)
-                {
+
                     foreach (var elem in GetFolder(path, isFilter))
                     {
                         yield return elem;
                     }
-                }
 
-                if (!ExcludeFiles)
-                {
+
                     foreach (var elem in GetFiles(path, isFilter))
                     {
                         yield return elem;
                     }
-                }
+                
 
                 OnFinish(new ProgressArgs { Message = FINISH_SEARCHING, IsSearching = IsSearching });
             }
@@ -100,62 +97,64 @@ namespace FileSystemVisitor
 
         private IEnumerable<string> GetFolder(string path, bool isFilter = false)
         {
-            var pathOfFolders = isFilter ?
+            if (!ExcludeFolders)
+            {
+                var pathOfFolders = isFilter ?
                     Directory.GetDirectories(path, filterDelegate.Invoke(), SearchOption.AllDirectories) :
                     Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
 
 
-            if (isFilter)
-                OnFilteredDirectoryFinished(new ProgressArgs { Message = FIND_DIRECTORY_MESSAGE_WITH_FILTER, IsSearching = IsSearching });
-            else
-                OnDirectoryFinished(new ProgressArgs { Message = FIND_DIRECTORY_MESSAGE_WITHOUT_FILTER, IsSearching = IsSearching });
-
-
-            foreach (var folderPath in pathOfFolders)
-            {
-                if (IsSearching == true)
-                {
-                    yield return folderPath;
-                }
+                if (isFilter)
+                    OnFilteredDirectoryFinished(new ProgressArgs { Message = FIND_DIRECTORY_MESSAGE_WITH_FILTER, IsSearching = IsSearching });
                 else
+                    OnDirectoryFinished(new ProgressArgs { Message = FIND_DIRECTORY_MESSAGE_WITHOUT_FILTER, IsSearching = IsSearching });
+
+
+                foreach (var folderPath in pathOfFolders)
                 {
-                    break;
+                    if (IsSearching == true)
+                    {
+                        yield return folderPath;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
 
         private IEnumerable<string> GetFiles(string path, bool isFilter = false)
         {
-            var pathOfFiles = isFilter ?
+            if (!ExcludeFiles)
+            {
+                var pathOfFiles = isFilter ?
                    Directory.GetFiles(path, filterDelegate.Invoke(), SearchOption.AllDirectories) :
                    Directory.GetFiles(path, "*", SearchOption.AllDirectories);
 
 
-            if (isFilter)
-                OnFilteredFileFinished(new ProgressArgs { Message = FIND_fILE_MESSAGE_WITH_FILTER, IsSearching = IsSearching });
-            else
-                OnFileFinished(new ProgressArgs { Message = FIND_fILE_MESSAGE_WITHOUT_FILTER, IsSearching = IsSearching });
-
-
-            foreach (var filePath in pathOfFiles)
-            {
-                if (IsSearching == true)
-                {
-                    yield return filePath;
-                }
+                if (isFilter)
+                    OnFilteredFileFinished(new ProgressArgs { Message = FIND_fILE_MESSAGE_WITH_FILTER, IsSearching = IsSearching });
                 else
+                    OnFileFinished(new ProgressArgs { Message = FIND_fILE_MESSAGE_WITHOUT_FILTER, IsSearching = IsSearching });
+
+
+                foreach (var filePath in pathOfFiles)
                 {
-                    break;
+                    if (IsSearching == true)
+                    {
+                        yield return filePath;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
 
         protected void OnStart(ProgressArgs args)
         {
-            //this.IsSearching = true;
-            //this.ExcludeFiles = false;
-            //this.ExcludeFolders = false;
-
             var tmp = Start;
             if (tmp != null && args.IsSearching != false)
                 Start(this, args);
@@ -166,6 +165,10 @@ namespace FileSystemVisitor
             var tmp = Finish;
             if (tmp != null && args.IsSearching != false)
                 Finish(this, args);
+
+            this.IsSearching = true;
+            this.ExcludeFiles = false;
+            this.ExcludeFolders = false;
         }
 
         protected void OnFileFinished(ProgressArgs args)

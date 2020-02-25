@@ -6,14 +6,14 @@ namespace FileSystemVisitorConsole
 {
     class Program
     {
-        static readonly string Path = @"d:\TKMI\";
+        static readonly string Path = @"d:\проги_дес\музыка\";
         static void Main()
         {
             Console.WriteLine($"Root path is {Path}:");
             if (Directory.Exists(Path))
             {
                 var visitor =
-                    new FileSystemVisitor.FileSystemVisitor(() => "*.bak");
+                    new FileSystemVisitor.FileSystemVisitor(() => "Reflection*");
 
                 visitor.Start += ConsoleLog;
                 visitor.Finish += ConsoleLog;
