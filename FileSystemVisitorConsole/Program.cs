@@ -6,41 +6,63 @@ namespace FileSystemVisitorConsole
 {
     class Program
     {
-        static readonly string Path = @"d:\проги_дес\музыка\";
-        static void Main(string[] args)
+        static readonly string Path = @"d:\TKMI\";
+        static void Main()
         {
             Console.WriteLine($"Root path is {Path}:");
             if (Directory.Exists(Path))
             {
-                var visitor = 
-                    new FileSystemVisitor.FileSystemVisitor();
-                var visitor2 =
-                    new FileSystemVisitor.FileSystemVisitor(() => "Sagath*");
+                var visitor =
+                    new FileSystemVisitor.FileSystemVisitor(() => "*.bak");
 
-                visitor.Progress += ConsoleLog;
-                visitor2.Progress += ConsoleLog;
+                visitor.Start += ConsoleLog;
+                visitor.Finish += ConsoleLog;
+                visitor.DirectoryFinished += ConsoleLog;
+                visitor.FileFinished += ConsoleLog;
+                visitor.FilteredDirectoryFinished += ConsoleLog;
+                visitor.FilteredFileFinished += ConsoleLog;
 
                 foreach (var item in visitor.Find(Path))
                 {
                     Console.WriteLine(item);
                 }
 
-                //var rootFolder =
-                //    new FileSystemVisitor.Entities.Folder(Path);
+                Console.WriteLine();
 
-                //visitor.StartBuildSystemTree(rootFolder);
+                foreach (var item in visitor.FindWithFilter(Path))
+                {
+                    Console.WriteLine(item);
+                }
 
-                //foreach (var item in visitor.GetAllFoldersAndFiles(rootFolder))
-                //{
-                //    Console.WriteLine(item);
-                //}
+                Console.WriteLine();
+                Console.WriteLine("Stop searching after five finded elements:");
+                int iterateCount = 5;
+                int curentIterate = 0;
+                foreach (var item in visitor.Find(Path))
+                {
+                    curentIterate++;
+                    Console.WriteLine(item);
+                    if (curentIterate == iterateCount)
+                    {
+                        visitor.Stop();
+                    }
+                }
 
-                Console.WriteLine("=======================================================================");
 
-                //rootFolder =
-                //    new FileSystemVisitor.Entities.Folder(Path);
-                //visitor2.StartBuildSystemTree(rootFolder);
-                foreach (var item in visitor2.Find(Path))
+                Console.WriteLine();
+                Console.WriteLine("Exclude files from search:");
+
+                visitor.ExcludeFilesFromSearch();
+                foreach (var item in visitor.Find(Path))
+                {
+                    Console.WriteLine(item);
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("Exclude folders from search:");
+
+                visitor.ExcludeFoldersFromSearch();
+                foreach (var item in visitor.Find(Path))
                 {
                     Console.WriteLine(item);
                 }
