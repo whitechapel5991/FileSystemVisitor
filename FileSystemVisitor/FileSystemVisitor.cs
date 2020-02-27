@@ -68,7 +68,7 @@ namespace FileSystemVisitor
             return result;
         }
 
-        protected IEnumerable<string> GetEnumerator(string path, bool isFilter = false)
+        public IEnumerable<string> GetEnumerator(string path, bool isFilter = false)
         {
             if (Directory.Exists(path))
             {

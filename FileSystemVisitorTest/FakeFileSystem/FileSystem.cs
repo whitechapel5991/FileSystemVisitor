@@ -7,27 +7,37 @@ namespace FileSystemVisitorTest.FakeFileSystem
 {
     class FileSystem
     {
-
+        protected string CurrentDirectory { get; private set; } = Environment.CurrentDirectory;
         public void InitFakeFileSystem()
         {
-            string currentDirectory = Environment.CurrentDirectory;
+            DeleteFakeFileSystem();
 
             foreach (var folder in GetFolderElements())
             {
-                string path = Path.Combine(currentDirectory, folder);
+                string path = Path.Combine(CurrentDirectory, folder);
                 Directory.CreateDirectory(path);
             }
 
             foreach (var file in GetFileElements())
             {
-                string path = Path.Combine(currentDirectory, file);
+                string path = Path.Combine(CurrentDirectory, file);
                 File.Create(path);
             }
         }
 
-        public void DeleteFakeFileSystem()
+        public string GetRootFolderPath()
         {
-            // delete fake file system
+            return Path.Combine(CurrentDirectory, GetFolderElements()[0]);
+        }
+
+        private void DeleteFakeFileSystem()
+        {
+            string path = GetRootFolderPath();
+
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
         }
 
         private string[] GetFolderElements()
