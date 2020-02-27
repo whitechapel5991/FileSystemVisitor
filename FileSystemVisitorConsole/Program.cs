@@ -1,6 +1,7 @@
 ﻿using FileSystemVisitor;
 using System;
 using System.IO;
+using Visitor = FileSystemVisitor.FileSystemVisitor;
 
 namespace FileSystemVisitorConsole
 {
@@ -13,7 +14,7 @@ namespace FileSystemVisitorConsole
             if (Directory.Exists(Path))
             {
                 var visitor =
-                    new FileSystemVisitor.FileSystemVisitor(() => "Reflection*");
+                    new Visitor(() => "Reflection*");
 
                 visitor.Start += ConsoleLog;
                 visitor.Finish += ConsoleLog;

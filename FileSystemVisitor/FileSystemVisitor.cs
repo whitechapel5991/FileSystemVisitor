@@ -153,6 +153,7 @@ namespace FileSystemVisitor
             }
         }
 
+        #region Events method
         protected void OnStart(ProgressArgs args)
         {
             var tmp = Start;
@@ -198,6 +199,7 @@ namespace FileSystemVisitor
             if (tmp != null && args.IsSearching != false && args.ExcludeFolders != true)
                 FilteredDirectoryFinished(this, args);
         }
+        #endregion
     }
 
     public class ProgressArgs
